@@ -10,20 +10,30 @@ from openai import OpenAI
 from telegram import Update
 from telegram.constants import ParseMode
 from telegram.ext import ApplicationBuilder, ContextTypes, MessageHandler, CommandHandler, filters
+from dotenv import load_dotenv
+
+#carrega o arquivo .env
+load_dotenv()
 
 # Chaves de API
-TOKEN_TELEGRAM = "8540209207:AAEPJa-MhD2cn--KwmIDHRN_AygsJ3bPiK4"
-GOOGLE_API_KEY = "AIzaSyAC_zqrGo-GmtkjTgQgyxCDYrqMiWFDLG4"
-OPENAI_API_KEY = "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"
+TOKEN_TELEGRAM = os.getenv("TOKEN_TELEGRAM")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 # My SQL Config
 DB_CONFIG = {
     'host': 'localhost',
     'user': 'root',
-    'password': '', 
+    'password': os.getenv("DB_PASSWORD", ), 
     'database': 'bot_ingles'
 }
-
+# 4. Trava de segurança
+# Se o arquivo .env não for encontrado, o bot avisa e para, em vez de dar erro estranho depois.
+if not TOKEN_TELEGRAM or not GOOGLE_API_KEY:
+    print("❌ ERRO CRÍTICO: Chaves de API não encontradas!")
+    print("Verifique se você criou o arquivo .env na mesma pasta do script.")
+    exit()
+    
 # Setup
 genai.configure(api_key=GOOGLE_API_KEY)
 model = genai.GenerativeModel('gemini-2.0-flash-lite')
