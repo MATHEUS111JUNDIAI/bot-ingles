@@ -32,4 +32,4 @@ O sistema atua como um professor particular, ouvindo a pronúncia do aluno, tran
 
 1. Clone o repositório:
 ```bash
-git clone [https://github.com/SEU_USUARIO/bot-ingles.git](https://github.com/MATHEUS111JUNDIAI/bot-ingles.git)
+git clone https://github.com/MATHEUS111JUNDIAI/bot-ingles.git
