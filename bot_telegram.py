@@ -36,11 +36,14 @@ if not TOKEN_TELEGRAM or not GOOGLE_API_KEY:
     
 # Setup
 genai.configure(api_key=GOOGLE_API_KEY)
-model = genai.GenerativeModel('gemini-2.0-flash-lite')
+model = genai.GenerativeModel('gemini-flash-latest')
 openai_client = OpenAI(api_key=OPENAI_API_KEY)
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 if not os.path.exists('static'): os.makedirs('static')
+
+# Isso diz: "Biblioteca httpx, só me avise se for algo GRAVE (Warning). Não quero saber de Info."
+logging.getLogger("httpx").setLevel(logging.WARNING)
 
 # Banco De Dados
 def get_db_connection():
