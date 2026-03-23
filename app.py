@@ -5,10 +5,12 @@ import edge_tts
 import google.generativeai as genai
 from flask import Flask, request, send_from_directory
 from twilio.twiml.messaging_response import MessagingResponse
+from dotenv import load_dotenv
 
-# --- CONFIGURAÇÕES ---
-# Pegue sua chave aqui: https://aistudio.google.com/
-GOOGLE_API_KEY = "AIzaSyCqcy8pjJ-csXTtROONGW_0PxWEBldrzkM"
+load_dotenv()
+
+# CONFIGURAÇÕES 
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 # Configuração do Gemini
 genai.configure(api_key=GOOGLE_API_KEY)
@@ -20,7 +22,7 @@ UPLOAD_FOLDER = 'static'
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
-# --- FUNÇÕES AUXILIARES ---
+# FUNÇÕES AUXILIARES
 
 async def gerar_audio_resposta(texto, arquivo_saida):
     """Converte texto em áudio usando Edge-TTS (Vozes Microsoft)"""
@@ -46,7 +48,7 @@ def processar_com_gemini(caminho_audio_usuario):
     response = model.generate_content([prompt, arquivo_gemini])
     return response.text
 
-# --- ROTAS DO SERVIDOR ---
+# ROTAS DO SERVIDOR
 
 @app.route('/bot', methods=['POST'])
 def bot():

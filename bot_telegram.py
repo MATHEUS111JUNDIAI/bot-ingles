@@ -1,5 +1,9 @@
 import os
+import sys
 import time
+
+# Força o terminal do Windows a aceitar emojis e caracteres UTF-8
+sys.stdout.reconfigure(encoding='utf-8')
 import json
 import logging
 import mysql.connector
