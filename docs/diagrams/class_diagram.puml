@@ -4,8 +4,8 @@ skinparam classAttributeIconSize 0
 package "src.api" {
     class Routes {
         + web_chat() : Response
-        + bot_whatsapp() : Response
         + metrics() : Response
+        + index() : Response
     }
 }
 

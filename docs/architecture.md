@@ -1,9 +1,8 @@
 # Architecture Documentation
 
 ## Overview
-Teacher Sarah (bot-ingles) é uma aplicação Flask completa para o ensino e prática de inglês com IA, servindo duas plataformas principais:
-1. **Web-Chat Interativo:** Frontend em HTML/CSS (Glassmorphism) e JS conectando ao endpoint `/api/web-chat` em `src/api/routes.py`.
-2. **Integração WhatsApp:** Endpoint `/bot` em `src/api/routes.py` integrado com Twilio Webhook.
+Teacher Sarah (bot-ingles) é uma aplicação Flask completa para o ensino e prática de inglês com IA através de uma aplicação Web interativa:
+- **Web-Chat Interativo:** Frontend em HTML/CSS (Glassmorphism) e JS conectando ao endpoint `/api/web-chat` em `src/api/routes.py`.
 
 ---
 
@@ -26,7 +25,7 @@ Utiliza `Flask-Limiter` em `main.py` baseado no IP para prevenir abuso sem impac
 Todos os diagramas abaixo foram modelados em PlantUML e estão armazenados na pasta [`docs/diagrams/`](file:///c:/Users/mathe/bot-ingles/docs/diagrams/).
 
 ### 1. Diagrama de Sequência (`sequence_diagram.puml`)
-Descreve a troca de mensagens em tempo real entre o Cliente (Web/WhatsApp), a Flask API e as APIs externas (Gemini, Wikipedia, Edge-TTS).
+Descreve a troca de mensagens em tempo real entre o Frontend Web Chat, a Flask API e as APIs externas (Gemini, Wikipedia, Edge-TTS).
 
 ```plantuml
 @startuml Sequence_Diagram_Teacher_Sarah
@@ -34,7 +33,7 @@ skinparam style strictuml
 autonumber
 
 actor "Estudante (Usuário)" as User
-participant "Frontend Web / WhatsApp" as Client
+participant "Frontend Web Chat (HTML/JS)" as Client
 participant "Flask API (routes.py)" as API
 participant "Gemini Service" as Gemini
 database "Google Gemini API" as GeminiAPI
@@ -43,7 +42,7 @@ participant "TTS Service (Edge-TTS)" as TTS
 participant "File Manager" as FM
 
 User -> Client: Envia Texto ou Gravação de Áudio
-Client -> API: POST /api/web-chat (ou /bot) [Payload: text / audio]
+Client -> API: POST /api/web-chat [Payload: text / audio]
 
 alt É mensagem de áudio
     API -> FM: Salva arquivo temporário de áudio em temp/
@@ -72,7 +71,7 @@ Client -> User: Exibe feedback visual, card de vocabulário e reproduz áudio da
 ---
 
 ### 2. Diagrama de Caso de Uso (`use_case_diagram.puml`)
-Define as funcionalidades oferecidas aos usuários finais e administradores do sistema.
+Define as funcionalidades oferecidas aos usuários finais e administradores do sistema Web.
 
 ```plantuml
 @startuml Use_Case_Diagram_Teacher_Sarah
@@ -81,18 +80,16 @@ skinparam packageStyle rectangle
 
 actor "Estudante de Inglês" as Student
 actor "Administrador / SRE" as Admin
-actor "Serviço Externo (Twilio)" as Twilio
 
 rectangle "Sistema Teacher Sarah (bot-ingles)" {
-    usecase "Conversar por Texto" as UC_Text
-    usecase "Praticar Pronúncia via Áudio" as UC_Audio
+    usecase "Conversar por Texto no Web-Chat" as UC_Text
+    usecase "Praticar Pronúncia via Gravador Web" as UC_Audio
     usecase "Receber Feedback Gramatical" as UC_Grammar
     usecase "Estudar Cards de Vocabulário com Imagens" as UC_Vocab
     usecase "Ouvir Resposta com Voz Nativa (TTS)" as UC_TTS
     usecase "Exportar Histórico de Conversa (CSV)" as UC_Export
     usecase "Selecionar Tópicos de Gramática" as UC_Topics
     usecase "Monitorar Métricas de Desempenho (Prometheus)" as UC_Metrics
-    usecase "Processar Webhook do WhatsApp" as UC_WhatsApp
 }
 
 Student --> UC_Text
@@ -102,10 +99,6 @@ Student --> UC_Vocab
 Student --> UC_TTS
 Student --> UC_Export
 Student --> UC_Topics
-
-Twilio --> UC_WhatsApp
-UC_WhatsApp ..> UC_Grammar : <<include>>
-UC_WhatsApp ..> UC_TTS : <<include>>
 
 Admin --> UC_Metrics
 
@@ -129,8 +122,8 @@ skinparam classAttributeIconSize 0
 package "src.api" {
     class Routes {
         + web_chat() : Response
-        + bot_whatsapp() : Response
         + metrics() : Response
+        + index() : Response
     }
 }
 
@@ -225,7 +218,6 @@ Demonstra a arquitetura modular e os limites dos subsistemas.
 @startuml Component_Diagram_Teacher_Sarah
 package "Frontend Client" {
     [Web Browser UI (HTML/CSS/JS)] as WebUI
-    [Twilio WhatsApp Client] as WAClient
 }
 
 package "Flask Backend Subsystem (Python 3.12)" {
@@ -240,12 +232,9 @@ package "Flask Backend Subsystem (Python 3.12)" {
 cloud "External Services & APIs" {
     [Google Gemini 3.1 API] as GeminiAPI
     [Wikipedia REST API] as WikiAPI
-    [Twilio API Webhook] as TwilioAPI
 }
 
 WebUI --> Routes : HTTP POST /api/web-chat
-WAClient --> TwilioAPI
-TwilioAPI --> Routes : HTTP POST /bot
 
 Routes --> GeminiSvc : Solicita IA & JSON Struct
 GeminiSvc --> GeminiAPI : REST/gRPC Calls
@@ -371,8 +360,7 @@ Mapeia os nós de hardware/software, containers e gateways em produção.
 @startuml Deployment_Diagram_Teacher_Sarah
 
 node "Dispositivo do Usuário" as UserDevice {
-    artifact "Navegador Web (Chrome / Safari)" as Browser
-    artifact "WhatsApp Mobile Client" as WhatsAppApp
+    artifact "Navegador Web (Chrome / Firefox / Safari)" as Browser
 }
 
 node "Nuvem de Hospedagem (Ex: VPS / Vercel / Render)" as HostServer {
@@ -394,18 +382,12 @@ cloud "Google Cloud Platform" {
     }
 }
 
-cloud "Infraestrutura Twilio" {
-    node "Twilio WhatsApp Gateway" as TwilioGateway
-}
-
 cloud "Serviços Públicos de Terceiros" {
     node "Wikipedia REST API" as WikiCloud
     node "Microsoft Edge-TTS Service" as EdgeTTSCloud
 }
 
 Browser --> Proxy : HTTPS (Port 443)
-WhatsAppApp --> TwilioGateway : Messaging API
-TwilioGateway --> Proxy : Webhook HTTP(S) POST
 
 Proxy --> WSGI : Pass-through HTTP (Port 5000)
 WSGI --> FlaskApp : Executa Rotas Python

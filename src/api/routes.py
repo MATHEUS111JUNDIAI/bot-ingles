@@ -2,7 +2,6 @@ import os
 import requests
 import asyncio
 from flask import Blueprint, request, send_from_directory, Response
-from twilio.twiml.messaging_response import MessagingResponse
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
 from src.services.gemini_service import model, load_audio_inline, LLM_RESPONSE_LATENCY
@@ -37,72 +36,6 @@ def metrics():
     """Expõe as métricas do Prometheus"""
     return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
 
-@api_bp.route('/bot', methods=['POST'])
-def bot():
-    """Recebe a mensagem do WhatsApp (Twilio)"""
-    import time
-    
-    msg_recebida = request.values.get('Body', '').lower()
-    if len(msg_recebida) > 300:
-        msg_recebida = msg_recebida[:300]
-    media_url = request.values.get('MediaUrl0')
-    remetente = request.values.get('From')
-    
-    resp = MessagingResponse()
-    msg = resp.message()
-    
-    total_start = time.time()
-
-    # 1. Se o usuário mandou áudio
-    if media_url:
-        print(f"Áudio recebido de {remetente}")
-        
-        caminho_input = generate_temp_filename("ogg")
-        caminho_output = generate_temp_filename("mp3")
-        
-        try:
-            with open(caminho_input, 'wb') as f:
-                f.write(requests.get(media_url, timeout=10).content)
-                
-            print("Enviando áudio para o Gemini...")
-            arquivo_gemini = load_audio_inline(caminho_input)
-            
-            prompt = """
-            You are a friendly English Tutor. The user is practicing English via WhatsApp audio.
-            1. Listen to the user's audio.
-            2. Respond naturally to the conversation in English.
-            3. Keep your response concise (maximum 2 sentences).
-            4. If the user makes a significant grammar mistake, gently correct it after your response.
-            """
-            
-            t0 = time.time()
-            response = model.generate_content([prompt, arquivo_gemini])
-            resposta_texto = response.text.strip()
-            LLM_RESPONSE_LATENCY.observe(time.time() - t0)
-                
-            print(f"Gemini respondeu: {resposta_texto}")
-            
-            asyncio.run(gerar_audio_edge(resposta_texto, caminho_output))
-            
-            filename = os.path.basename(caminho_output)
-            url_audio_resposta = f"{request.host_url}temp/{filename}"
-            
-            msg.body(f"🤖 {resposta_texto}")
-                
-        except Exception as e:
-            print(f"❌ Erro Crítico WhatsApp: {e}")
-            ERROR_COUNT.labels(platform='whatsapp', error_type=type(e).__name__).inc()
-            msg.body("Sorry, I had a technical problem! Try again.")
-        finally:
-            TOTAL_PROCESSING_LATENCY.labels(platform='whatsapp').observe(time.time() - total_start)
-            from src.utils.file_manager import safe_remove_file
-            safe_remove_file(caminho_input)
-            
-    # 2. Se for só texto
-    else:
-        msg.body("Mande um áudio para treinarmos sua pronúncia! 🎤")
-
-    return str(resp)
 
 @api_bp.route('/api/web-chat', methods=['POST'])
 def web_chat():
@@ -311,14 +244,6 @@ def web_chat():
         if caminho_output:
             safe_remove_file(caminho_output)
 
-
-@api_bp.route('/temp/<path:filename>')
-def serve_temp(filename):
-    """
-    Rota para o Twilio conseguir baixar o MP3 gerado.
-    Em um cenário ideal, o arquivo seria deletado logo após o Twilio fazer o download.
-    """
-    return send_from_directory(os.path.abspath(TEMP_FOLDER), filename)
 
 # --- ROTAS DO FRONTEND ---
 @api_bp.route('/')

@@ -37,6 +37,6 @@ def static_files(path):
     return "Not Found", 404
 
 if __name__ == '__main__':
-    print("🚀 Teacher Sarah (WhatsApp/Flask - Nova Arquitetura) Rodando!")
+    print("🚀 Teacher Sarah (Web/Flask) Rodando!")
     # O metrics do Flask vai rodar na mesma porta do app Flask em /metrics
     app.run(debug=True, port=5000)

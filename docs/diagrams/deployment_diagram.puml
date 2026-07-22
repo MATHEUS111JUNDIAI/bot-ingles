@@ -1,8 +1,7 @@
 @startuml Deployment_Diagram_Teacher_Sarah
 
 node "Dispositivo do Usuário" as UserDevice {
-    artifact "Navegador Web (Chrome / Safari)" as Browser
-    artifact "WhatsApp Mobile Client" as WhatsAppApp
+    artifact "Navegador Web (Chrome / Firefox / Safari)" as Browser
 }
 
 node "Nuvem de Hospedagem (Ex: VPS / Vercel / Render)" as HostServer {
@@ -24,18 +23,12 @@ cloud "Google Cloud Platform" {
     }
 }
 
-cloud "Infraestrutura Twilio" {
-    node "Twilio WhatsApp Gateway" as TwilioGateway
-}
-
 cloud "Serviços Públicos de Terceiros" {
     node "Wikipedia REST API" as WikiCloud
     node "Microsoft Edge-TTS Service" as EdgeTTSCloud
 }
 
 Browser --> Proxy : HTTPS (Port 443)
-WhatsAppApp --> TwilioGateway : Messaging API
-TwilioGateway --> Proxy : Webhook HTTP(S) POST
 
 Proxy --> WSGI : Pass-through HTTP (Port 5000)
 WSGI --> FlaskApp : Executa Rotas Python

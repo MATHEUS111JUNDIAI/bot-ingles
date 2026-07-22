@@ -3,7 +3,7 @@ skinparam style strictuml
 autonumber
 
 actor "Estudante (Usuário)" as User
-participant "Frontend Web / WhatsApp" as Client
+participant "Frontend Web Chat (HTML/JS)" as Client
 participant "Flask API (routes.py)" as API
 participant "Gemini Service" as Gemini
 database "Google Gemini API" as GeminiAPI
@@ -12,7 +12,7 @@ participant "TTS Service (Edge-TTS)" as TTS
 participant "File Manager" as FM
 
 User -> Client: Envia Texto ou Gravação de Áudio
-Client -> API: POST /api/web-chat (ou /bot) [Payload: text / audio]
+Client -> API: POST /api/web-chat [Payload: text / audio]
 
 alt É mensagem de áudio
     API -> FM: Salva arquivo temporário de áudio em temp/

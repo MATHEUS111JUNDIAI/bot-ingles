@@ -1,8 +1,8 @@
 # AGENTS.md
 
 ## Visão Geral do Projeto
-API REST em Python com Flask para o bot do WhatsApp ("Teacher Sarah") e frontend Web.
-Integra com OpenAI/Gemini e Twilio.
+API REST em Python com Flask para a tutora de inglês "Teacher Sarah" e frontend Web.
+Integra com Google Gemini, Edge-TTS e Wikipedia API.
 
 ## Antes de escrever código
 1. Confirme o diretório base (`c:\Users\mathe\bot-ingles`).
@@ -18,7 +18,7 @@ Se o baseline já estiver quebrado, corrija os erros de Lint ou Testes antes de 
 - Respostas do Gemini na Web DEVEM ser retornadas em formato JSON válido, escapando chaves `{{` `}}` em f-strings onde apropriado.
 
 ## Documentos Temáticos
-- Arquitetura (`docs/architecture.md`) — Entendimento dos serviços Flask, Twilio e LLMs.
+- Arquitetura (`docs/architecture.md`) — Entendimento dos serviços Flask, Gemini e LLMs.
 - Padrões de Teste (`docs/testing.md`) — Referência ao escrever e rodar testes no `pytest`.
 
 ## Definição de concluído (Definition of Done)
