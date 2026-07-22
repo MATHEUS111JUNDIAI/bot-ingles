@@ -1,0 +1,44 @@
+@startuml State_Diagram_Teacher_Sarah
+[*] --> Ocioso : Inicialização da Aplicação
+
+state Ocioso {
+    [*] --> AguardandoEntrada
+    AguardandoEntrada : Esperando input do usuário
+}
+
+Ocioso --> RecebendoMensagem : Usuário envia Texto ou Áudio
+
+state RecebendoMensagem {
+    [*] --> ValidandoRateLimit
+    ValidandoRateLimit --> ArmazenandoTemporario : Tipo == Áudio
+    ValidandoRateLimit --> EncaminhandoPayload : Tipo == Texto
+}
+
+RecebendoMensagem --> ProcessandoLLM : Payload Válido
+RecebendoMensagem --> ErroRateLimit : Rate Limit Excedido (429)
+
+state ProcessandoLLM {
+    [*] --> ChamandoGemini
+    ChamandoGemini --> ParsingJSON : Resposta JSON Recebida
+}
+
+ProcessandoLLM --> BuscandoRecursos : JSON Válido
+ProcessandoLLM --> ErroProcessamento : Falha Gemini / JSON Inválido
+
+state BuscandoRecursos {
+    [*] --> FetchWikipediaImage
+    [*] --> GenerateEdgeTTSAudio
+}
+
+BuscandoRecursos --> EnviandoResposta : Recursos Prontos
+
+state EnviandoResposta {
+    [*] --> CompilandoPayloadHTTP
+    CompilandoPayloadHTTP --> RegistrandoMetricasPrometheus
+}
+
+EnviandoResposta --> Ocioso : HTTP 200 Renderizado no Cliente
+ErroRateLimit --> Ocioso : Notificação exibida
+ErroProcessamento --> Ocioso : Mensagem de erro amigável retornada
+
+@enduml

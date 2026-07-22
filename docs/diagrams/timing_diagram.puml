@@ -1,0 +1,51 @@
+@startuml Timing_Diagram_Teacher_Sarah
+robust "Estado do Cliente (Web / App)" as Client
+robust "Flask Middleware & Rotas" as Flask
+robust "Google Gemini LLM" as Gemini
+robust "Wikipedia API" as Wiki
+robust "Edge-TTS Engine" as TTS
+
+@0
+Client is Idle
+Flask is Idle
+Gemini is Idle
+Wiki is Idle
+TTS is Idle
+
+@100
+Client is SendingRequest
+Flask is ReceivingRequest
+
+@200
+Client is WaitingResponse
+Flask is CallingLLM
+Gemini is ProcessingPrompt
+
+@1500
+Gemini is Idle
+Flask is ProcessingJSON
+
+@1600
+Flask is ParallelFetching
+Wiki is FetchingImage
+TTS is SynthesizingVoice
+
+@1800
+Wiki is Idle
+
+@2100
+TTS is Idle
+Flask is CompilingResponse
+
+@2200
+Flask is Idle
+Client is RenderingUI
+
+@3000
+Client is Idle
+
+highlight 100 to 2200 : Tempo total de ciclo (~2.1 segundos)
+highlight 200 to 1500 : Latência Gemini LLM (~1.3s)
+highlight 1600 to 2100 : Processamento Paralelo Assets (Wiki & TTS ~500ms)
+
+@enduml

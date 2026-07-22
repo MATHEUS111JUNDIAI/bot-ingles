@@ -1,0 +1,43 @@
+@startuml Object_Diagram_Teacher_Sarah
+
+object "requestPayload : WebChatRequest" as req {
+    message = "I goes to the beach yesterday"
+    type = "text"
+    topic = "Past Simple"
+}
+
+object "geminiResponse : GeminiStructuredOutput" as resp {
+    sarah_reply = "That sounds fun! Remember to use the past tense: 'I went to the beach yesterday'."
+    user_transcription = "I goes to the beach yesterday"
+    grammar_corrections = ["'I goes' -> 'I went' (Past Simple of 'go')"]
+    study_tips = ["Practice irregular past tense verbs like go -> went, see -> saw."]
+    vocab_word = "Beach"
+}
+
+object "wikiMedia : WikipediaAsset" as wiki {
+    title = "Beach"
+    thumbnail_url = "https://upload.wikimedia.org/.../Beach_sand.jpg"
+}
+
+object "audioOutput : TTSAudioFile" as tts {
+    file_path = "/static/audio/sarah_reply_102938.mp3"
+    voice_name = "en-US-AriaNeural"
+}
+
+object "finalResponsePayload : JSONResponse" as json {
+    status = "success"
+    sarah_text = "That sounds fun! Remember..."
+    corrections = ["'I goes' -> 'I went'"]
+    vocab_word = "Beach"
+    image_url = "https://upload.wikimedia.org/.../Beach_sand.jpg"
+    audio_url = "/static/audio/sarah_reply_102938.mp3"
+}
+
+req --> resp : processado por GeminiService
+resp --> wiki : consulta vocab_word
+resp --> tts : sintetiza sarah_reply
+resp --> json : compila
+wiki --> json : compila
+tts --> json : compila
+
+@enduml

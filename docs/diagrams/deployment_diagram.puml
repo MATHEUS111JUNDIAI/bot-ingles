@@ -1,0 +1,50 @@
+@startuml Deployment_Diagram_Teacher_Sarah
+
+node "Dispositivo do Usuário" as UserDevice {
+    artifact "Navegador Web (Chrome / Safari)" as Browser
+    artifact "WhatsApp Mobile Client" as WhatsAppApp
+}
+
+node "Nuvem de Hospedagem (Ex: VPS / Vercel / Render)" as HostServer {
+    node "Nginx / Reverse Proxy" as Proxy {
+        component "SSL / TLS Termination"
+    }
+
+    node "Docker Container / Python Environment" as DockerApp {
+        component "Gunicorn / WSGI Application Server" as WSGI
+        component "Flask Application (main.py)" as FlaskApp
+        folder "/static/audio/" as AudioStore
+        folder "/temp/" as TempStore
+    }
+}
+
+cloud "Google Cloud Platform" {
+    node "Google Gemini API Endpoint" as GeminiCloud {
+        component "Gemini 3.1 Flash Lite Model"
+    }
+}
+
+cloud "Infraestrutura Twilio" {
+    node "Twilio WhatsApp Gateway" as TwilioGateway
+}
+
+cloud "Serviços Públicos de Terceiros" {
+    node "Wikipedia REST API" as WikiCloud
+    node "Microsoft Edge-TTS Service" as EdgeTTSCloud
+}
+
+Browser --> Proxy : HTTPS (Port 443)
+WhatsAppApp --> TwilioGateway : Messaging API
+TwilioGateway --> Proxy : Webhook HTTP(S) POST
+
+Proxy --> WSGI : Pass-through HTTP (Port 5000)
+WSGI --> FlaskApp : Executa Rotas Python
+
+FlaskApp --> AudioStore : Grava .mp3 gerados
+FlaskApp --> TempStore : Armazena upload temporário
+
+FlaskApp --> GeminiCloud : HTTPS REST/gRPC
+FlaskApp --> WikiCloud : HTTPS GET
+FlaskApp --> EdgeTTSCloud : Async WebSocket / HTTPS
+
+@enduml

@@ -4,8 +4,15 @@
       "id": "F01",
       "behavior": "Implement Harness Engineering Subsystems",
       "verification": ".\\init.bat passes successfully.",
-      "state": "pending",
-      "evidence": ""
+      "state": "passing",
+      "evidence": "pytest: 2 passed, flake8 clean"
+    },
+    {
+      "id": "F02",
+      "behavior": "PlantUML Software Engineering Diagrams",
+      "verification": "9 .puml files created in docs/diagrams/ and integrated into docs/architecture.md",
+      "state": "passing",
+      "evidence": "docs/diagrams/*.puml valid PlantUML diagrams created and documented in docs/architecture.md"
     }
   ]
 }

@@ -1,0 +1,35 @@
+@startuml Component_Diagram_Teacher_Sarah
+package "Frontend Client" {
+    [Web Browser UI (HTML/CSS/JS)] as WebUI
+    [Twilio WhatsApp Client] as WAClient
+}
+
+package "Flask Backend Subsystem (Python 3.12)" {
+    [Flask Core App (main.py)] as MainApp
+    [API Routes (routes.py)] as Routes
+    [Gemini Service] as GeminiSvc
+    [TTS Service (Edge-TTS)] as TTSSvc
+    [File Manager Utility] as FileMgr
+    [Prometheus Metrics] as MetricsSvc
+}
+
+cloud "External Services & APIs" {
+    [Google Gemini 3.1 API] as GeminiAPI
+    [Wikipedia REST API] as WikiAPI
+    [Twilio API Webhook] as TwilioAPI
+}
+
+WebUI --> Routes : HTTP POST /api/web-chat
+WAClient --> TwilioAPI
+TwilioAPI --> Routes : HTTP POST /bot
+
+Routes --> GeminiSvc : Solicita IA & JSON Struct
+GeminiSvc --> GeminiAPI : REST/gRPC Calls
+
+Routes --> WikiAPI : Query Imagen Vocabulário
+
+Routes --> TTSSvc : Converte resposta em áudio
+TTSSvc --> FileMgr : Salva .mp3 em static/
+
+Routes --> MetricsSvc : Registra métricas
+@enduml

@@ -1,0 +1,31 @@
+@startuml Activity_Diagram_Teacher_Sarah
+start
+:Receber Requisição HTTP POST;
+
+if (Validar Rate Limiting (Flask-Limiter)) then (Excedido)
+    :Retornar HTTP 429 Too Many Requests;
+    stop
+else (Permitido)
+    if (Tipo de Entrada?) then (Áudio (.webm / .mp3))
+        :Salvar arquivo temporário via FileManager;
+        :Enviar arquivo de áudio ao Gemini Service;
+    else (Texto)
+        :Extrair mensagem de texto;
+        :Enviar prompt de texto ao Gemini Service;
+    end if
+endif
+
+:Gemini processa e gera resposta JSON estruturada;
+:Validar e realizar parse do JSON (Resposta, Correções, Vocabulário);
+
+fork
+    :Consultar Wikipedia REST API para imagem do vocab_word;
+fork again
+    :Gerar áudio MP3 da resposta com Edge-TTS;
+end fork
+
+:Compilar payload final de resposta HTTP JSON;
+:Registrar latência e métricas em Prometheus;
+:Retornar HTTP 200 OK ao cliente;
+stop
+@enduml

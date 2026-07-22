@@ -1,0 +1,52 @@
+@startuml Class_Diagram_Teacher_Sarah
+skinparam classAttributeIconSize 0
+
+package "src.api" {
+    class Routes {
+        + web_chat() : Response
+        + bot_whatsapp() : Response
+        + metrics() : Response
+    }
+}
+
+package "src.services" {
+    class GeminiService {
+        - api_key : str
+        - model : str
+        + enviar_mensagem(texto: str, audio_path: str) : dict
+        + _construir_prompt_sistema() : str
+        + _parse_json_response(raw_response: str) : dict
+    }
+
+    class TTSService {
+        - voice : str
+        + gerar_audio_resposta(texto: str) : str
+    }
+}
+
+package "src.utils" {
+    class FileManager {
+        + salvar_audio_temporario(file_data) : str
+        + limpar_arquivos_antigos(diretorio: str) : void
+    }
+
+    class Metrics {
+        + REQUEST_COUNT : Counter
+        + LATENCY_HISTOGRAM : Histogram
+        + registrar_requisicao(endpoint: str, duration: float) : void
+    }
+}
+
+package "External Integrations" {
+    class WikipediaClient {
+        + buscar_imagem_palavra(palavra: str) : str
+    }
+}
+
+Routes --> GeminiService : utiliza
+Routes --> TTSService : utiliza
+Routes --> FileManager : utiliza
+Routes --> Metrics : registra
+Routes --> WikipediaClient : consulta
+
+@enduml

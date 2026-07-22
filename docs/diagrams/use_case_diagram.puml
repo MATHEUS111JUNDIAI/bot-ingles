@@ -1,0 +1,40 @@
+@startuml Use_Case_Diagram_Teacher_Sarah
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Estudante de Inglês" as Student
+actor "Administrador / SRE" as Admin
+actor "Serviço Externo (Twilio)" as Twilio
+
+rectangle "Sistema Teacher Sarah (bot-ingles)" {
+    usecase "Conversar por Texto" as UC_Text
+    usecase "Praticar Pronúncia via Áudio" as UC_Audio
+    usecase "Receber Feedback Gramatical" as UC_Grammar
+    usecase "Estudar Cards de Vocabulário com Imagens" as UC_Vocab
+    usecase "Ouvir Resposta com Voz Nativa (TTS)" as UC_TTS
+    usecase "Exportar Histórico de Conversa (CSV)" as UC_Export
+    usecase "Selecionar Tópicos de Gramática" as UC_Topics
+    usecase "Monitorar Métricas de Desempenho (Prometheus)" as UC_Metrics
+    usecase "Processar Webhook do WhatsApp" as UC_WhatsApp
+}
+
+Student --> UC_Text
+Student --> UC_Audio
+Student --> UC_Grammar
+Student --> UC_Vocab
+Student --> UC_TTS
+Student --> UC_Export
+Student --> UC_Topics
+
+Twilio --> UC_WhatsApp
+UC_WhatsApp ..> UC_Grammar : <<include>>
+UC_WhatsApp ..> UC_TTS : <<include>>
+
+Admin --> UC_Metrics
+
+UC_Text ..> UC_Grammar : <<include>>
+UC_Audio ..> UC_Grammar : <<include>>
+UC_Grammar ..> UC_Vocab : <<include>>
+UC_Grammar ..> UC_TTS : <<include>>
+
+@enduml
