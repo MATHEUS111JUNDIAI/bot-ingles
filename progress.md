@@ -1,16 +1,15 @@
 # Progresso do Projeto
 
-## Sessão Atual (Remoção do WhatsApp/Twilio & Atualização dos Diagramas para 100% Web)
-- **Data:** 2026-07-22
-- **Objetivo:** Remover código legado do WhatsApp/Twilio da API e alinhar a documentação e diagramas PlantUML para foco exclusivo na aplicação Web.
+## Sessão Atual (Reformulação do README.md para Apresentação de Portfólio)
+- **Data:** 2026-07-31
+- **Objetivo:** Reescrever o README.md para apresentar a Teacher Sarah como uma Plataforma Web completa com IA Multimodal, TTS, Observabilidade (Prometheus) e documentação UML.
 - **Feito:**
-  - Removidos rota `/bot`, rota `/temp/<path:filename>` e importações do Twilio em `src/api/routes.py`.
-  - Removida dependência `twilio` do `requirements.txt`.
-  - Atualizado o log de inicialização em `main.py`.
-  - Limpos os arquivos de documentação (`AGENTS.md`, `docs/testing.md`, `docs/architecture.md`).
-  - Atualizados os diagramas PlantUML (`sequence_diagram.puml`, `use_case_diagram.puml`, `class_diagram.puml`, `component_diagram.puml`, `deployment_diagram.puml`) para arquitetura 100% Web.
-  - Verificação de Lint (`flake8`) e Testes (`pytest`) aprovados com sucesso.
+  - Reformulado [README.md](file:///c:/Users/mathe/bot-ingles/README.md) removendo referências legadas de "bot de Telegram".
+  - Adicionadas badges de tecnologias (Python 3.12, Flask, Gemini, Prometheus).
+  - Incluída visão geral da arquitetura, diagrama ASCII e referências aos diagramas PlantUML em `docs/architecture.md`.
+  - Verificação com `.\init.bat` (flake8 + pytest) aprovada com sucesso.
 - **Bloqueios/Avisos:**
-  - Nenhum bloqueio.
+  - Opcional: Atualizar nome do repositório no GitHub de `bot-ingles` para `teacher-sarah-web` ou similar.
 - **Próximos Passos:**
-  - Prosseguir com a análise individual dos diagramas atualizados com o usuário.
+  - Ajustar o currículo/LinkedIn para alinhar com o novo README e a arquitetura Web do repositório.
+

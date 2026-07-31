@@ -1,84 +1,129 @@
-# 👩‍🏫 Teacher Sarah - AI English Tutor
+# 👩‍🏫 Teacher Sarah — AI-Powered Interactive English Tutor (Web Platform)
 
-**Teacher Sarah** is an advanced AI-powered English Tutor designed to help you practice your speaking, listening, and grammar through a beautiful Web Interface. 
+[![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+[![Google Gemini](https://img.shields.io/badge/Google%20Gemini-4285F4?style=for-the-badge&logo=googlegemini&logoColor=white)](https://ai.google.dev/)
+[![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white)](https://prometheus.io/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+
+**Teacher Sarah** is a full-stack AI-powered English Learning Web Application designed for interactive speaking, listening, grammar analysis, and vocabulary acquisition.
 
 🌐 **Live Demo:** [https://bot.matheusdev.com.br](https://bot.matheusdev.com.br)
 
-Initially built as a Telegram/WhatsApp bot, the project has evolved into a fully interactive **Web Application** featuring real-time audio recording, vocabulary flashcards, and grammar analysis.
+---
+
+## ✨ Key Features
+
+- **🎙️ Real-Time Dual Input (Voice & Text):** Practice pronunciation using the web browser's native audio recorder (`MediaRecorder API`) or engage via text chat.
+- **🧠 Multimodal LLM & Structured Output:** Powered by **Google Gemini 3.1 Flash Lite** with strict JSON Schema constraints to return structured grammar corrections, study tips, and target vocabulary.
+- **🗣️ Neural Text-to-Speech (TTS):** Generates high-quality spoken audio responses using **Microsoft Edge-TTS** (`en-US-AriaNeural`), enabling authentic listening practice.
+- **🖼️ Automated Vocabulary Flashcards:** Extracts key vocabulary from interactions and enriches flashcards with definitions and relevant media via the **Wikipedia REST API**.
+- **📚 Guided Study Topics:** Interactive sidebar with pre-configured grammar modules (e.g., *Present Continuous*, *Past Simple*, *Conditionals*).
+- **📊 Observability & Metrics:** Built-in **Prometheus** metrics endpoint (`/metrics`) tracking request counts, latencies, and system health.
+- **🛡️ Resilience & Rate Limiting:** Protected by **Flask-Limiter** to enforce IP-based rate limits and prevent API abuse.
+- **📥 Conversation Export:** Download complete study session history in CSV format for offline review.
+- **🎨 Glassmorphism Design:** Modern, responsive, mobile-friendly UI built with vanilla HTML, CSS, and JavaScript.
 
 ---
 
-## 🚀 Features
+## 🏗️ Architecture & Software Engineering
 
-- **🎙️ Dual Input Mode:** Practice your English by recording your voice directly in the browser or typing text messages.
-- **🧠 Smart Grammar Feedback:** The AI (Gemini) analyzes your speech/text, identifies grammar mistakes, and provides clear, structured corrections and study tips.
-- **🗣️ Native Voice (TTS):** Sarah replies with a natural-sounding English voice (powered by Edge-TTS), allowing you to practice your listening skills.
-- **🖼️ Contextual Vocabulary Cards:** Automatically extracts a key vocabulary word from your conversation, generates a simple definition and example sentence, and fetches a beautiful, free image via the **Wikipedia API**.
-- **📚 Pre-defined Study Topics:** A sleek sidebar containing study modules inspired by *Essential Grammar in Use* (e.g., Present Continuous, Past Simple) to guide your study sessions.
-- **📥 Export to CSV:** Download your entire conversation history, including all grammar corrections and tips, for later review.
-- **✨ Glassmorphism UI:** A modern, stunning, responsive interface built with vanilla HTML/CSS.
+The project follows a modular, scalable architecture with clear separation of concerns:
+
+```
+┌─────────────────┐       HTTP POST        ┌──────────────────────────┐
+│  Browser Client │ ─────────────────────> │  Flask API (routes.py)   │
+│ (MediaRecorder) │                        └────────────┬─────────────┘
+└─────────────────┘                                     │
+                                   ┌────────────────────┼────────────────────┐
+                                   ▼                    ▼                    ▼
+                        ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐
+                        │  Gemini Service  │  │   TTS Service    │  │ Wikipedia Client │
+                        │ (JSON Schema LLM)│  │    (Edge-TTS)    │  │   (Media Assets) │
+                        └──────────────────┘  └──────────────────┘  └──────────────────┘
+```
+
+Detailed UML software architecture diagrams are available in [`docs/architecture.md`](docs/architecture.md) and [`docs/diagrams/`](docs/diagrams/):
+- 📐 **Sequence Diagram:** Full HTTP execution cycle and parallel asset resolution.
+- 📐 **Component & Class Diagrams:** Modular backend Python structure.
+- 📐 **Timing Diagram:** Latency profiling (~2.1s total end-to-end response time).
+- 📐 **Deployment & State Diagrams:** Production deployment and transaction states.
 
 ---
 
-## 🛠️ Technology Stack
+## 🛠️ Tech Stack
 
-- **Backend:** Python 3.12, Flask
-- **Frontend:** Vanilla HTML, CSS (Glassmorphism), JavaScript
-- **AI Brain (LLM):** Google Gemini 3.1 Flash Lite (JSON Structured Outputs)
-- **Voice Engine (TTS):** Edge-TTS (Free Microsoft Neural Voices - *Aria*)
-- **Image Integration:** Wikipedia REST API (Free, no keys required)
+| Domain | Technology |
+| :--- | :--- |
+| **Backend Framework** | Python 3.12, Flask, Gunicorn |
+| **Frontend UI** | HTML5, CSS3 (Glassmorphism), Vanilla JavaScript |
+| **Artificial Intelligence** | Google Gemini 3.1 Flash Lite API (Multimodal / JSON Output) |
+| **Voice Synthesis** | Microsoft Edge-TTS (`edge-tts`) |
+| **Third-Party APIs** | Wikipedia REST API |
+| **Observability** | Prometheus (`prometheus-client`), Flask-Limiter |
+| **Testing & Quality** | Pytest, Flake8 |
 
 ---
 
-## 📦 How to Run the Project
+## 📦 Getting Started
 
 ### Prerequisites
-- Python 3.12+ installed
-- Google Gemini API Key
+- Python 3.12+
+- Google Gemini API Key ([Get a key here](https://aistudio.google.com/))
 
-### Installation
+### Installation & Setup
 
 1. **Clone the repository:**
-```bash
-git clone https://github.com/MATHEUS111JUNDIAI/bot-ingles.git
-cd bot-ingles
-```
+   ```bash
+   git clone https://github.com/MATHEUS111JUNDIAI/bot-ingles.git
+   cd bot-ingles
+   ```
 
 2. **Create and activate a virtual environment:**
-```bash
-python -m venv venv
-# On Windows:
-venv\Scripts\activate
-# On Mac/Linux:
-source venv/bin/activate
-```
+   ```bash
+   python -m venv venv
+   # On Windows:
+   venv\Scripts\activate
+   # On Linux/macOS:
+   source venv/bin/activate
+   ```
 
-3. **Install the dependencies:**
-```bash
-pip install -r requirements.txt
-```
+3. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-4. **Set up Environment Variables:**
-Create a `.env` file in the root directory and add your Gemini API key:
-```env
-GEMINI_API_KEY=your_google_gemini_api_key_here
-```
+4. **Configure Environment Variables:**
+   Create a `.env` file in the root directory:
+   ```env
+   GEMINI_API_KEY=your_google_gemini_api_key_here
+   ```
 
 5. **Run the Application:**
-```bash
-python main.py
-```
+   ```bash
+   python main.py
+   ```
 
-6. **Access the Web App:**
-Open your browser and navigate to: `http://127.0.0.1:5000`
+6. **Access in Browser:**
+   Navigate to `http://127.0.0.1:5000`
 
 ---
 
-## 💡 How it works under the hood
-1. The frontend captures audio via `MediaRecorder` or accepts text.
-2. The payload is sent to Flask.
-3. Flask sends the audio/text to **Gemini 3.1 Flash Lite** with a prompt enforcing a strict JSON output schema.
-4. Gemini returns the transcription, a response, grammar errors, study suggestions, and a `vocab_word`.
-5. The backend uses the `vocab_word` to fetch a thumbnail from the **Wikipedia API**.
-6. The backend generates an audio file of Sarah's response using **Edge-TTS**.
-7. The frontend renders the UI elements dynamically based on the JSON payload.
+## 🧪 Testing & Code Quality
+
+Run automated linting and tests using the project harness script:
+
+```bash
+# Windows
+.\init.bat
+
+# Linux / macOS
+flake8 src tests
+pytest
+```
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
