@@ -56,6 +56,14 @@ def web_chat():
         return jsonify({"error": "Sua mensagem excedeu o limite de 300 caracteres."}), 400
 
     audio_file = request.files.get('audio')
+    if audio_file:
+        audio_file.seek(0, os.SEEK_END)
+        file_size = audio_file.tell()
+        audio_file.seek(0)
+        if file_size > 5 * 1024 * 1024:
+            print(f"❌ Arquivo de áudio excede 5MB ({file_size} bytes).")
+            return jsonify({"error": "O arquivo de áudio excede o limite máximo permitido de 5MB."}), 413
+
     history_text = request.form.get('history', '')
 
     if not texto_usuario and not audio_file:

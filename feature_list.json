@@ -20,6 +20,13 @@
       "verification": "Headers configured in vercel.json, inline onclick refactored to data-topic in frontend.",
       "state": "passing",
       "evidence": "X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, Content-Security-Policy configured."
+    },
+    {
+      "id": "F04",
+      "behavior": "Backend Rate Limiting (10 req/min) and 5MB Audio Size Limit (Anti-OOM)",
+      "verification": ".\\init.bat passes, unit tests test_audio_size_limit_413 and test_security_headers pass.",
+      "state": "passing",
+      "evidence": "Flask MAX_CONTENT_LENGTH set to 5MB, 413 & 429 handlers implemented, audio file validation active."
     }
   ]
 }

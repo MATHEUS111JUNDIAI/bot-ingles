@@ -8,10 +8,16 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 FRONTEND_DIR = os.path.join(BASE_DIR, 'frontend')
 
 app = Flask(__name__, static_folder=FRONTEND_DIR)
+app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # 5 MB max payload (Anti-OOM)
 CORS(app)
 
+
 def get_ip():
-    return request.headers.get('x-forwarded-for', request.remote_addr)
+    forwarded = request.headers.get('x-forwarded-for')
+    if forwarded:
+        return forwarded.split(',')[0].strip()
+    return request.headers.get('x-real-ip') or request.remote_addr or '127.0.0.1'
+
 
 limiter = Limiter(
     get_ip,
@@ -20,9 +26,15 @@ limiter = Limiter(
     storage_uri="memory://"
 )
 
+
 @app.errorhandler(429)
 def ratelimit_handler(e):
-    return jsonify(error="Você atingiu o limite de mensagens temporário."), 429
+    return jsonify(error="Você atingiu o limite de mensagens temporário (máximo de 10 requisições por minuto)."), 429
+
+
+@app.errorhandler(413)
+def request_entity_too_large(e):
+    return jsonify(error="O arquivo ou requisição excedeu o limite máximo permitido de 5MB."), 413
 
 
 @app.after_request
