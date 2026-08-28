@@ -24,6 +24,25 @@ limiter = Limiter(
 def ratelimit_handler(e):
     return jsonify(error="Você atingiu o limite de mensagens temporário."), 429
 
+
+@app.after_request
+def add_security_headers(response):
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    response.headers['Permissions-Policy'] = 'microphone=(self), camera=(), geolocation=(), payment=()'
+    response.headers['Content-Security-Policy'] = (
+        "default-src 'self'; "
+        "script-src 'self'; "
+        "style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; "
+        "font-src 'self' https://fonts.gstatic.com; "
+        "img-src 'self' data: https:; "
+        "media-src 'self' data: blob:; "
+        "connect-src 'self' https:;"
+    )
+    return response
+
+
 app.register_blueprint(api_bp)
 
 @app.route('/')
