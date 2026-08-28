@@ -48,6 +48,15 @@ textInput.addEventListener('keypress', (e) => {
     }
 });
 
+document.querySelectorAll('.topic-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+        const topic = btn.getAttribute('data-topic');
+        if (topic) {
+            startTopic(topic);
+        }
+    });
+});
+
 window.startTopic = function(topicName) {
     if (isRecording || recordBtn.disabled) return;
     

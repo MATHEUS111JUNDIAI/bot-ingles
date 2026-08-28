@@ -13,6 +13,13 @@
       "verification": "9 .puml files created in docs/diagrams/ and integrated into docs/architecture.md",
       "state": "passing",
       "evidence": "docs/diagrams/*.puml valid PlantUML diagrams created and documented in docs/architecture.md"
+    },
+    {
+      "id": "F03",
+      "behavior": "HTTP Security Headers and Strict CSP Configuration",
+      "verification": "Headers configured in vercel.json, inline onclick refactored to data-topic in frontend.",
+      "state": "passing",
+      "evidence": "X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, Content-Security-Policy configured."
     }
   ]
 }
